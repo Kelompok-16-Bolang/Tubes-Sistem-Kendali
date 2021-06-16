@@ -1,0 +1,70 @@
+#include <Servo.h>
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+int count= 0;
+int harga = 0;
+boolean state = true;
+int irPin = 7;
+int hasObstacle = HIGH;
+Servo servo;
+int angle = 10;
+// defines pins numbers
+const int trigPin = 12;
+const int echoPin = 11;
+// defines variables
+long duration;
+int distance;
+void setup() {
+  lcd.begin();
+  servo.attach(8);
+  servo.write(angle);
+  pinMode(irPin, INPUT);
+  pinMode(trigPin, OUTPUT); 
+   pinMode(echoPin, INPUT); 
+  Serial.begin(9600); 
+}
+void loop() {
+ // Menghapus kondisi trigPin
+digitalWrite(trigPin, LOW);
+delayMicroseconds(2);
+// Menyetel trigPin pada status HIGH selama 10 mikro detik
+digitalWrite(trigPin, HIGH);
+delayMicroseconds(10);
+digitalWrite(trigPin, LOW);
+duration = pulseIn(echoPin, HIGH);
+distance= duration*0.034/2;
+delay(10);
+
+ lcd.setCursor(0,0);
+ lcd.print("Jumlah Botol: ");
+ lcd.setCursor(0,1);
+ lcd.print("Harga: Rp.");
+ if (!digitalRead(irPin) && state){
+ // delay(5000);
+ count++;
+ harga+=100;
+ state = false;
+ lcd.setCursor(14,0);
+ lcd.print(count);
+ lcd.setCursor(10,1);
+ lcd.print(harga);
+  //servo.write(180);
+ delay(1000);
+ }
+ if (digitalRead(irPin)){
+ state = true;
+ delay(100);
+ }
+if(distance<40)
+{
+  
+  servo.write(90);
+  delay(3000);
+  
+  }
+  else
+  {
+    servo.write(0);
+    }
+    
+}
